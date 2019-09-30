@@ -27,7 +27,7 @@ def process_unread_messages(mail_service, camera):
 
             photos_dir = os.environ['PICAMERA_DIR']
             timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S')
-            photo_name = "catcamera_%s" % timestamp
+            photo_name = "catcamera_%s.jpg" % timestamp
             photo_path = "%s/%s" % (photos_dir, photo_name)
             print("Taking new photo at: '%s'" % photo_path)
             camera.take_photo(photo_path)
@@ -47,7 +47,7 @@ def main():
     camera = Camera()
     sleep_time = 10
     while True:
-        process_unread_messages(gmail_service)
+        process_unread_messages(gmail_service, camera)
         print("Sleeping %d seconds..." % sleep_time)
         time.sleep(sleep_time)
 

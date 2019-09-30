@@ -7,7 +7,7 @@ class Camera():
         self.camera = PiCamera()
 
     def take_photo(self, photoPath):
-        camera.start_preview()
+        self.camera.start_preview()
         sleep(2)
-        camera.capture(photoPath)
-        camera.stop_preview()
+        self.camera.capture(photoPath)
+        self.camera.stop_preview()

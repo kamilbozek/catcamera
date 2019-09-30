@@ -119,7 +119,7 @@ class GmailService():
         except errors.HttpError as error:
             print('An error occurred: %s' % error)
 
-    def create_message(sender, to, subject, message_text):
+    def create_message(self, sender, to, subject, message_text):
         """Create a message for an email.
 
         Args:
@@ -140,7 +140,7 @@ class GmailService():
         body = {'raw': raw}
         return body
 
-    def create_message_with_attachment(sender, to, subject, message_text, file_dir,
+    def create_message_with_attachment(self, sender, to, subject, message_text, file_dir,
                                        filename):
         """Create a message for an email.
 
