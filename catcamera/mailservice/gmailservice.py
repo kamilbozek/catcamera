@@ -61,7 +61,7 @@ class GmailService():
         try:
             message = self.service.users().messages().get(userId=user_id, id=msg_id).execute()
 
-            print('Message snippet: %s' % message['snippet'])
+            #print('Message snippet: %s' % message['snippet'])
 
             return message
         except errors.HttpError as error:
@@ -114,7 +114,7 @@ class GmailService():
         try:
             message = (self.service.users().messages().send(userId=user_id, body=message)
                        .execute())
-            print('Message Id: %s' % message['id'])
+            #print('Message Id: %s' % message['id'])
             return message
         except errors.HttpError as error:
             print('An error occurred: %s' % error)
@@ -211,7 +211,7 @@ class GmailService():
 
             label_ids = message['labelIds']
 
-            print
+            #print
             var = 'Message ID: %s - With Label IDs %s' % (msg_id, label_ids)
             return message
         except errors.HttpError as error:
