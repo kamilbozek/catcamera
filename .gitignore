@@ -106,3 +106,4 @@ venv.bak/
 credentials.json
 token.pickle
 
+credentials/
