@@ -1,4 +1,5 @@
 from google.cloud import vision
+import csv  
 import io
 import os
 
@@ -24,10 +25,14 @@ class Labels():
         response = client.label_detection(image=image)
         labels = response.label_annotations
 
-        print(labels)
-
-        print('Labels:')
-        for label in labels:
-            print(label.description)
-
         return labels
+    
+    def export_csv(self, file_path, labels):
+        with open(file_path, 'w', encoding='UTF8') as f:
+            writer = csv.writer(f)
+            header = ['mid', 'description', 'score', 'topicality']
+            writer.writerow(header)
+            for label in labels:
+                print(label.description)
+                data = [label.mid, label.description, label.score, label.topicality]
+                writer.writerow(data)

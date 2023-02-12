@@ -17,11 +17,11 @@ formatter = logging.Formatter(
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-def __photo_path(dir):
+def __file_path_prefix(dir):
     now = datetime.now()
     timestamp = now.strftime("%Y%m%d-%H%M%S")
-    photo_path = "{}/picture-{}.jpg".format(dir, timestamp)
-    return photo_path
+    prefix = "{}/picture-{}".format(dir, timestamp)
+    return prefix
 
 def main():
     PICTURES_DIR = "pictures"
@@ -29,11 +29,15 @@ def main():
     camera = Camera()
     labels = Labels()
     if (os.path.exists(PICTURES_DIR)):
-        photo_path = __photo_path(PICTURES_DIR)
+        prefix = __file_path_prefix(PICTURES_DIR)
+        photo_path = "{}.jpg".format(prefix)
         logger.info("Taking a picture: {}".format(photo_path))
         camera.take_photo(photo_path)
         logger.info("Getting image labels")
         photo_labels = labels.image_labels(photo_path)
+        csv_path = "{}.csv".format(prefix)
+        logger.info("Saving labels: {}".format(csv_path))
+        labels.export_csv(csv_path, photo_labels)
         logger.info("Success!")
     else:
         error_message = "{} directory doesn't exist".format(PICTURES_DIR)
