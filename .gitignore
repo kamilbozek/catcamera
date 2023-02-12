@@ -108,3 +108,4 @@ token.pickle
 
 credentials/
 pictures/
+.DS_Store

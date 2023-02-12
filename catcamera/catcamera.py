@@ -1,7 +1,6 @@
-from cameraservice.camera import Camera
+from service.camera import Camera
+from service.label import Labels
 from datetime import datetime
-from google.cloud import vision
-import io
 import logging
 import os
 import sys
@@ -18,43 +17,23 @@ formatter = logging.Formatter(
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-def image_labels(photo_path):
-    # Instantiates a client
-    client = vision.ImageAnnotatorClient()
-
-    # The name of the image file to annotate
-    file_name = os.path.abspath(photo_path)
-
-    # Loads the image into memory
-    with io.open(file_name, 'rb') as image_file:
-        content = image_file.read()
-
-    image = vision.Image(content=content)
-
-    # Performs label detection on the image file
-    response = client.label_detection(image=image)
-    labels = response.label_annotations
-
-    print(labels)
-
-    print('Labels:')
-    for label in labels:
-        print(label.description)
-
-    return labels
+def __photo_path(dir):
+    now = datetime.now()
+    timestamp = now.strftime("%Y%m%d-%H%M%S")
+    photo_path = "{}/picture-{}.jpg".format(dir, timestamp)
+    return photo_path
 
 def main():
     PICTURES_DIR = "pictures"
     logger.info("Starting catcamera")
     camera = Camera()
-    now = datetime.now()
-    timestamp = now.strftime("%Y%m%d-%H%M%S")
+    labels = Labels()
     if (os.path.exists(PICTURES_DIR)):
-        photo_path = "{}/picture-{}.jpg".format(PICTURES_DIR, timestamp)
+        photo_path = __photo_path(PICTURES_DIR)
         logger.info("Taking a picture: {}".format(photo_path))
         camera.take_photo(photo_path)
         logger.info("Getting image labels")
-        labels = image_labels(photo_path)
+        photo_labels = labels.image_labels(photo_path)
         logger.info("Success!")
     else:
         error_message = "{} directory doesn't exist".format(PICTURES_DIR)
