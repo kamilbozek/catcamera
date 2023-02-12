@@ -1,57 +1,36 @@
-from mailservice.gmailservice import GmailService
 from cameraservice.camera import Camera
-import time
 from datetime import datetime
-import json
+import logging
 import os
+import sys
 
 
-def process_unread_messages(mail_service, camera, secret):
-    messages = mail_service.list_messages_matching_query("me", "label:unread")
-    for message in messages:
-        msg = mail_service.get_message("me", message['id'])
-        #print("MESSAGE: %s" % msg['payload']['headers'])
-
-        subject = next(
-            header['value'] for header in msg['payload']['headers'] if header['name'].lower() == "subject")
-        #print(subject)
-
-        if subject == secret:
-            fromAddress = next(
-                header['value'] for header in msg['payload']['headers'] if header['name'].lower() == "from")
-            print
-            print("New photo request from: %s" % fromAddress)
-            fromAddressParsed = fromAddress.split('<')[1].split('>')[0]
-
-            photos_dir = os.environ['CATCAMERA_PHOTOS_DIR']
-            timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S')
-            photo_name = "catcamera_%s.jpg" % timestamp
-            photo_path = "%s/%s" % (photos_dir, photo_name)
-            print("Taking new photo at: '%s'" % photo_path)
-            camera.take_photo(photo_path)
-
-            response = mail_service.create_message_with_attachment("Emma Eternal Magic", fromAddressParsed, "Ja", "",
-                                                            photos_dir,
-                                                            photo_name)
-
-            print("Sending new photo to: %s" % fromAddressParsed)
-            mail_service.send_message("me", response)
-
-            mail_service.modify_message('me', message['id'], mail_service.create_read_labels())
-            print
-
+logger = logging.getLogger("default_logger")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter(
+    fmt='%(asctime)s.%(msecs)03d - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 def main():
-    credentials_dir = os.environ['CATCAMERA_CREDS_DIR']
-    secret = os.environ['CATCAMERA_SECRET']
-    gmail_service = GmailService(credentials_dir)
+    PICTURES_DIR = "pictures"
+    logger.info("Starting catcamera")
     camera = Camera()
-    sleep_time = 20
-    while True:
-        process_unread_messages(gmail_service, camera, secret)
-        print("Sleeping %d seconds..." % sleep_time)
-        time.sleep(sleep_time)
-
+    now = datetime.now()
+    timestamp = now.strftime("%Y%m%d-%H%M%S")
+    if (os.path.exists(PICTURES_DIR)):
+        photo_path = "{}/picture-{}.jpg".format(PICTURES_DIR, timestamp)
+        logger.info("Taking a picture: {}".format(photo_path))
+        camera.take_photo(photo_path)
+        logger.info("Success!")
+    else:
+        error_message = "{} directory doesn't exist".format(PICTURES_DIR)
+        logger.error(error_message)
+        sys.exit(error_message)
 
 if __name__ == '__main__':
     main()
