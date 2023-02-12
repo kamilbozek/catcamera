@@ -7,6 +7,7 @@ class Camera():
         self.camera = PiCamera()
         self.camera.ISO = 800
         self.camera.resolution = (2592, 1944)
+        self.camera.color_effects = (128,128)
 
     def take_photo(self, photoPath):
         self.camera.start_preview()
